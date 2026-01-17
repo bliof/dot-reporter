@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'minitest'
 require_relative 'formatter'
 
 module DotReporter
   class MinitestFormatter < Minitest::AbstractReporter
-    def initialize(io = $stdout, options = {})
+    def initialize(io = $stdout, _options = {})
       super() # AbstractReporter doesn't take args in init but Minitest::Reporters might
       @io = io
       @dot_formatter = DotReporter::Formatter.new(io)

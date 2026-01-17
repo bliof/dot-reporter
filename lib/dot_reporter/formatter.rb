@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DotReporter
   class Formatter
     BRAILLE_BASE = 0x2800
@@ -53,46 +55,42 @@ module DotReporter
       # Hide cursor? "\e[?25l"
     end
 
-
     def close
       flush_buffer(force: true)
       @output.puts # Newline after progress
       print_summary
     end
 
-    public
-
     def example_passed
-       @buffer << :passed
-       @passed_count += 1
-       @total_tests += 1
-       @current_line_passed ||= 0
-       @current_line_passed += 1
-       @current_line_tests += 1
+      @buffer << :passed
+      @passed_count += 1
+      @total_tests += 1
+      @current_line_passed ||= 0
+      @current_line_passed += 1
+      @current_line_tests += 1
 
-       flush_and_print
+      flush_and_print
     end
 
     def example_failed
-       @buffer << :failed
-       @failed_count += 1
-       @total_tests += 1
-       @current_line_tests += 1
+      @buffer << :failed
+      @failed_count += 1
+      @total_tests += 1
+      @current_line_tests += 1
 
-       flush_and_print
+      flush_and_print
     end
 
     def example_pending
-       @buffer << :pending
-       @pending_count += 1
-       @total_tests += 1
-       @current_line_tests += 1
+      @buffer << :pending
+      @pending_count += 1
+      @total_tests += 1
+      @current_line_tests += 1
 
-       flush_and_print
+      flush_and_print
     end
 
     private
-
 
     def refresh_current_line
       # Calculate available width for dots
@@ -106,18 +104,18 @@ module DotReporter
       # Ideally we use a buffer for the current line's Braille characters.
 
       # Initialize @line_buffer if nil
-      @line_buffer ||= ""
+      @line_buffer ||= ''
 
       # Construct the current partial char from @buffer
-      partial_char = ""
+      partial_char = ''
       unless @buffer.empty?
         char_code = BRAILLE_BASE
         has_failure = false
         @buffer.each_with_index do |result, index|
-            char_code += BRAILLE_MAP[index]
-            has_failure = true if result == :failed
+          char_code += BRAILLE_MAP[index]
+          has_failure = true if result == :failed
         end
-        raw_char = [char_code].pack("U")
+        raw_char = [char_code].pack('U')
         partial_char = has_failure ? Colorizer.red(raw_char) : Colorizer.green(raw_char)
       end
 
@@ -126,16 +124,16 @@ module DotReporter
       visible_length = uncolorize(@line_buffer).length
 
       if visible_length >= available_width
-         # Line is full.
-         # Clear the line, print the line buffer without status, then newline.
-         @output.print "\r" + @line_buffer + " " * status.length + "\n"
-         @line_buffer = ""
-         @current_line_tests = @buffer.size # Reset count for new line
-         @current_line_passed = 0
+        # Line is full.
+        # Clear the line, print the line buffer without status, then newline.
+        @output.print "\r#{@line_buffer}#{' ' * status.length}\n"
+        @line_buffer = ''
+        @current_line_tests = @buffer.size # Reset count for new line
+        @current_line_passed = 0
       end
 
       # Print current line state
-      @output.print "\r" + @line_buffer + partial_char + status
+      @output.print "\r#{@line_buffer}#{partial_char}#{status}"
     end
 
     def status_text
@@ -161,8 +159,8 @@ module DotReporter
 
     # Overriding example hooks to update line stats
     def update_line_stats(result)
-       @current_line_passed ||= 0
-       @current_line_passed += 1 if result == :passed
+      @current_line_passed ||= 0
+      @current_line_passed += 1 if result == :passed
     end
 
     def uncolorize(text)
@@ -172,31 +170,29 @@ module DotReporter
     # We need to hook into example_passed/failed/pending to update @line_buffer when flushing
 
     def flush_buffer(force: false)
-       return if @buffer.empty? && !force
+      return if @buffer.empty? && !force
 
-       char_code = BRAILLE_BASE
-       has_failure = false
-       @buffer.each_with_index do |result, index|
-          if result
-            char_code += BRAILLE_MAP[index]
-            has_failure = true if result == :failed
-          end
-       end
+      char_code = BRAILLE_BASE
+      has_failure = false
+      @buffer.each_with_index do |result, index|
+        if result
+          char_code += BRAILLE_MAP[index]
+          has_failure = true if result == :failed
+        end
+      end
 
-       char = [char_code].pack("U")
-       colored_char = has_failure ? Colorizer.red(char) : Colorizer.green(char)
+      char = [char_code].pack('U')
+      colored_char = has_failure ? Colorizer.red(char) : Colorizer.green(char)
 
-       @line_buffer ||= ""
-       @line_buffer += colored_char
+      @line_buffer ||= ''
+      @line_buffer += colored_char
 
-       @buffer = []
+      @buffer = []
     end
 
     def flush_and_print
-       if @buffer.size == 8
-         flush_buffer
-       end
-       print_status
+      flush_buffer if @buffer.size == 8
+      print_status
     end
 
     def print_status
@@ -204,10 +200,10 @@ module DotReporter
     end
 
     def print_summary
-        duration = Time.now - @start_time
-        pass_rate = @total_tests > 0 ? ((@passed_count.to_f / @total_tests) * 100).round(1) : 0
+      duration = Time.now - @start_time
+      pass_rate = @total_tests.positive? ? ((@passed_count.to_f / @total_tests) * 100).round(1) : 0
 
-        summary = <<~SUMMARY
+      summary = <<~SUMMARY
 
         ╔════════════════════════════════════════╗
         ║   Dot Reporter Summary                 ║
@@ -220,10 +216,9 @@ module DotReporter
         ║ Duration:         #{"#{duration.round(2)}s".ljust(21)}║
         ║ Pass Rate:        #{"#{pass_rate}%".ljust(21)}║
         ╚════════════════════════════════════════╝
-        SUMMARY
+      SUMMARY
 
-        @output.puts summary
+      @output.puts summary
     end
-
   end
 end

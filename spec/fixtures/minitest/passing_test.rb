@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'minitest/autorun'
 require 'dot_reporter'
 
@@ -25,8 +27,8 @@ Minitest.extensions << 'dot_reporter'
 
 module Minitest
   def self.plugin_dot_reporter_init(options)
-     Minitest.reporter.reporters.clear
-     Minitest.reporter << DotReporter::MinitestFormatter.new(options[:io] || $stdout)
+    Minitest.reporter.reporters.clear
+    Minitest.reporter << DotReporter::MinitestFormatter.new(options[:io] || $stdout)
   end
 end
 

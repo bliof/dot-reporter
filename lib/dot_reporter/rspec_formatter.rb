@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rspec/core/formatters/base_formatter'
 require_relative 'formatter'
 
@@ -6,7 +8,7 @@ module DotReporter
     RSpec::Core::Formatters.register self, :start, :example_passed, :example_failed, :example_pending, :close
 
     def initialize(output)
-      super(output)
+      super
       @dot_formatter = DotReporter::Formatter.new(output)
     end
 

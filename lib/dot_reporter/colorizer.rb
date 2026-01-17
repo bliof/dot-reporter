@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DotReporter
   module Colorizer
     COLORS = {
@@ -12,12 +14,13 @@ module DotReporter
 
     def self.colorize(text, color)
       return text unless COLORS.key?(color)
+
       "\e[#{COLORS[color]}m#{text}\e[0m"
     end
 
-    def self.red(text); colorize(text, :red); end
-    def self.green(text); colorize(text, :green); end
-    def self.yellow(text); colorize(text, :yellow); end
-    def self.cyan(text); colorize(text, :cyan); end
+    def self.red(text) = colorize(text, :red)
+    def self.green(text) = colorize(text, :green)
+    def self.yellow(text) = colorize(text, :yellow)
+    def self.cyan(text) = colorize(text, :cyan)
   end
 end
